@@ -4,7 +4,7 @@ import request from '@/utils/request'
 // 同行库列表
 export function peerList(data) {
   return request({
-    url: 'api/other/peerList',
+    url: 'api/user/peerList',
     method: 'post',
     data
   })
@@ -13,7 +13,7 @@ export function peerList(data) {
 // 编辑同行库
 export function auditPeer (data) {
   return request({
-    url: 'api/other/auditPeer',
+    url: 'api/user/auditPeer',
     method: 'post',
     data
   })
@@ -22,7 +22,7 @@ export function auditPeer (data) {
 // 同行库屏蔽状态
 export function changeUserStatus (data) {
   return request({
-    url: 'api/other/changeUserStatus',
+    url: 'api/user/changeUserStatus',
     method: 'post',
     data
   })

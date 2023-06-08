@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column label="角色名称" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
+          <span>{{ row.role_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="角色备注" align="center">
@@ -46,7 +46,7 @@
     <el-dialog :title="isEdit ? '编辑角色' : '新增角色' " :visible.sync="dialogFormVisible" width="800px">
       <el-form :model="editData" ref="ruleForm" label-width="120px" style="margin-top: 20px;">
         <el-form-item label="名称">
-          <el-input v-model="editData.name" type="text" style="width: 60%" clearable></el-input>
+          <el-input v-model="editData.role_name" type="text" style="width: 60%" clearable></el-input>
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="editData.remark" type="text" style="width: 60%" clearable></el-input>
@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { groupList, auditGroup, menuList, setGroupMenu } from '@/api/user'
+import { roleList, addRole, editRole, menuList, setGroupMenu } from '@/api/user'
 
 export default {
   data() {
@@ -131,7 +131,7 @@ export default {
     // 获取列表数据
     getList() {
       this.listLoading = true
-      groupList({}).then(response => {
+      roleList({}).then(response => {
         if (response.code == 1) {
           this.list = response.data
         }      
@@ -144,22 +144,34 @@ export default {
     editInfo () {
       this.addBtn = true;
       let params = {
-         name: this.editData.name,
+         role_name: this.editData.role_name,
          remark: this.editData.remark
       }
       if (this.isEdit) {
         params.id = this.editData.id
+        editRole(params).then(response => {
+          this.addBtn = false;
+          if (response.code == 1) {
+            this.dialogFormVisible = false;
+            this.getList()
+            this.$message.success('编辑成功')
+          } else {
+            this.$message.error(response.msg)
+          }
+        })
+      } else {
+        addRole(params).then(response => {
+          this.addBtn = false;
+          if (response.code == 1) {
+            this.dialogFormVisible = false;
+            this.getList()
+            this.$message.success('新增成功')
+          } else {
+            this.$message.error(response.msg)
+          }
+        })
       }
-      auditGroup(params).then(response => {
-        this.addBtn = false;
-        if (response.code == 1) {
-          this.dialogFormVisible = false;
-          this.getList()
-          this.isEdit ? this.$message.success('编辑成功') : this.$message.success('新增成功')
-        } else {
-          this.$message.error(response.msg)
-        }
-      })
+      
     },
     handleUpdate(row) {
       this.isEdit = true;

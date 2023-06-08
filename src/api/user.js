@@ -59,9 +59,9 @@ export function editUser (data) {
 }
 
 // 角色列表
-export function groupList (data) {
+export function roleList(data) {
   return request({
-    url: 'api/user/groupList',
+    url: 'api/user/roleList',
     method: 'post',
     data
   })
@@ -125,6 +125,24 @@ export function setUserGroup (data) {
 export function editPassword (data) {
   return request({
     url: 'api/user/editPassword',
+    method: 'post',
+    data
+  })
+}
+
+// 新增角色
+export function addRole (data) {
+  return request({
+    url: 'api/user/addRole',
+    method: 'post',
+    data
+  })
+}
+
+// 修改角色
+export function editRole (data) {
+  return request({
+    url: 'api/user/editRole',
     method: 'post',
     data
   })

@@ -17,17 +17,17 @@
     >
       <el-table-column label="ID" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.uid }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.username }}</span>
+          <span>{{ row.id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="昵称" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.nickname }}</span>
+          <span>{{ row.username }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="手机号" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.mobile }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -60,10 +60,10 @@
     <el-dialog title="编辑用户信息" :visible.sync="dialogFormVisible" width="800px">
       <el-form :model="editData" ref="ruleForm" label-width="120px" style="margin-top: 20px;">
         <el-form-item label="昵称">
-          <el-input v-model="editData.nickname" type="text" style="width: 60%" clearable></el-input>
+          <el-input v-model="editData.username" type="text" style="width: 60%" clearable></el-input>
         </el-form-item>
         <el-form-item label="电话">
-          <el-input v-model="editData.phone" type="text" style="width: 60%" clearable></el-input>
+          <el-input v-model="editData.mobile" type="text" style="width: 60%" clearable></el-input>
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="editData.status" clearable style="width: 60%">
@@ -94,7 +94,7 @@
           <el-input v-model="regData.repassword" type="text" style="width: 60%" clearable show-password></el-input>
         </el-form-item>
         <el-form-item label="手机号">
-          <el-input v-model="regData.phone" type="text" style="width: 60%" clearable></el-input>
+          <el-input v-model="regData.mobile" type="text" style="width: 60%" clearable></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -209,7 +209,7 @@ export default {
         username: this.regData.username,
         password: this.regData.password,
         repassword: this.regData.repassword,
-        phone: this.regData.phone
+        mobile: this.regData.mobile
       };
       registerUser(params).then(res => {
         this.editBtn = false;
@@ -225,10 +225,11 @@ export default {
     // 编辑账号
     editInfo () {
       this.addBtn = true;
+      console.log(this.editData)
       let params = {
-         uid: this.editData.uid,
-         nickname: this.editData.nickname,
-         phone: this.editData.phone,
+         uid: this.editData.id,
+         username: this.editData.username,
+         mobile: this.editData.mobile,
          status: this.editData.status
       }
       editUser(params).then(response => {
