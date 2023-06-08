@@ -1,19 +1,19 @@
 <template>
   <div class="app-container">
     <el-form :model="listQuery" ref="ruleForm" label-width="120px" inline style="margin-top: 20px;">
-      <el-form-item label="姓名">
-				<el-input v-model="listQuery.name" type="text" placeholder="请输入" clearable></el-input>
+      <el-form-item label="openid">
+				<el-input v-model="listQuery.openid" type="text" placeholder="请输入" clearable></el-input>
 			</el-form-item>
       <el-form-item label="unionid">
 				<el-input v-model="listQuery.unionid" type="text" placeholder="请输入" clearable></el-input>
 			</el-form-item>
-      <el-form-item label="屏蔽原因">
+      <!-- <el-form-item label="屏蔽原因">
 				<el-select v-model="listQuery.type" clearable style="width: 60%">
             <el-option label="同行" :value="1"></el-option>
             <el-option label="超龄" :value="2"></el-option>
             <el-option label="不可开发" :value="3"></el-option>
           </el-select>
-			</el-form-item>
+			</el-form-item> -->
 			<el-button
          style="margin-left: 20px;"
 			   type="primary"
@@ -54,22 +54,17 @@
           <span>{{ row.unionid }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="微信openid" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.openid }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="屏蔽原因" align="center">
         <template slot-scope="{row}">
-          <span>{{ formatterType(row.type) }}</span>
+          <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="姓名" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="客户id" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.vccustomerid }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="屏蔽状态" align="center">
+      <!-- <el-table-column label="屏蔽状态" align="center">
         <template slot-scope="{row}">
           <el-switch
             v-model="row.close"
@@ -78,7 +73,7 @@
             @change="changeStatus(row)"
           ></el-switch>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -90,23 +85,21 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
-    <el-dialog :title="isEdit ? '编辑推广页面关键字' : '新增推广页面关键字'" :visible.sync="dialogFormVisible" width="800px">
+    <el-dialog :title="isEdit ? '编辑屏蔽库' : '新增屏蔽库'" :visible.sync="dialogFormVisible" width="800px">
       <el-form :model="editData" ref="ruleForm" label-width="120px" style="margin-top: 20px;">
-        <el-form-item label="客户id">
-          <el-input v-model="editData.vccustomerid" type="text" style="width: 60%" placeholder="请输入" clearable></el-input>
-        </el-form-item>
-        <el-form-item label="客户名称">
-          <el-input v-model="editData.name" type="text" style="width: 60%" clearable placeholder="请输入"></el-input>
+        <el-form-item label="openid">
+          <el-input v-model="editData.openid" type="text" style="width: 60%" clearable placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="unionid">
           <el-input v-model="editData.unionid" type="text" style="width: 60%" clearable placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item label="屏蔽原因">
-          <el-select v-model="editData.type" clearable style="width: 60%">
+          <el-input v-model="editData.remark" type="text" style="width: 60%" clearable placeholder="请输入"></el-input>
+          <!-- <el-select v-model="editData.type" clearable style="width: 60%">
           <el-option label="同行" :value="1"></el-option>
           <el-option label="超龄" :value="2"></el-option>
           <el-option label="不可开发" :value="3"></el-option>
-        </el-select>
+        </el-select> -->
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -123,14 +116,13 @@
 </template>
 
 <script>
-import { peerList, auditPeer, changeUserStatus } from '@/api/other'
+import { peerList, auditPeer, changeUserStatus, addPeer, editPeer } from '@/api/other'
 import Pagination from '@/components/Pagination'
 const defaultQuery = {
   page: 1,
   limit: 10,
-  name: '',
   unionid: '',
-  type: ''
+  openid: ''
 }
 
 export default {
@@ -204,24 +196,35 @@ export default {
     editInfo () {
       this.addBtn = true;
       let params = {
-        vccustomerid: this.editData.vccustomerid,
-        name: this.editData.name,
+        openid: this.editData.openid,
         unionid: this.editData.unionid,
-        type: this.editData.type
+        remark: this.editData.remark
       }
       if (this.isEdit) {
         params.id = this.editData.id
-      }
-      auditPeer(params).then(response => {
+        editPeer(params).then(response => {
+          this.addBtn = false;
+          if (response.code == 1) {
+            this.dialogFormVisible = false;
+            this.getList()
+            this.$message.success('编辑成功')
+          } else {
+            this.$message.error(response.msg)
+          }
+        })
+      } else {
+        addPeer(params).then(response => {
         this.addBtn = false;
         if (response.code == 1) {
           this.dialogFormVisible = false;
           this.getList()
-          this.isEdit ? this.$message.success('编辑成功') : this.$message.success('新增成功')
+          this.$message.success('新增成功')
         } else {
           this.$message.error(response.msg)
         }
       })
+      }
+      
     },
     // 格式化屏蔽原因
     formatterType (type) {

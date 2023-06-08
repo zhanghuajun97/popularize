@@ -10,6 +10,24 @@ export function peerList(data) {
   })
 }
 
+// 新增屏蔽库
+export function addPeer (data) {
+  return request({
+    url: 'api/user/addPeer',
+    method: 'post',
+    data
+  })
+}
+
+// 编辑屏蔽库
+export function editPeer (data) {
+  return request({
+    url: 'api/user/editPeer',
+    method: 'post',
+    data
+  })
+}
+
 // 编辑同行库
 export function auditPeer (data) {
   return request({
